@@ -3,25 +3,17 @@ import styles from "@/app/ui/dashboard/users/users.module.css";
 import Search from "@/app/ui/dashboard/search/search";
 import Image from "next/image";
 import Link from "next/link";
-const users = [
-  {
-    id: 1,
-    userName: "Amitav",
-    email: "amitav@gmail.com",
-    createdAt: Date.now(),
-    isAdmin: true,
-    isActive: true,
-  },
-  {
-    id: 1,
-    userName: "Test",
-    email: "test@gmail.com",
-    createdAt: Date.now(),
-    isAdmin: true,
-    isActive: false,
-  },
-];
-const Users = () => {
+import Pagination from "@/app/ui/dashboard/pagination/pagination";
+import { fetchUsers } from "@/app/lib/data";
+
+interface Props {
+  searchParams: any;
+}
+const Users = async ({ searchParams }: Props) => {
+  const q = searchParams?.q || "";
+  const page = searchParams?.page || 1;
+  const { count, users } = await fetchUsers(q, page);
+  console.log(users);
   return (
     <div className={styles.container}>
       <div className={styles.top}>
@@ -47,7 +39,7 @@ const Users = () => {
               <td>
                 <div className={styles.user}>
                   <Image
-                    src={"/noavatar.png"}
+                    src={user.img || "/noavatar.png"}
                     alt=""
                     width={40}
                     height={40}
@@ -79,7 +71,7 @@ const Users = () => {
           ))}
         </tbody>
       </table>
-      {/* <Pagination count={count} /> */}
+      <Pagination count={count} />
     </div>
   );
 };
