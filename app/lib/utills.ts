@@ -1,10 +1,8 @@
 import mongoose from "mongoose";
 
 let connection: any;
-
 export const connectToDB = async () => {
-  const connectionUrl = process.env.MONGODB_URL || "";
-  console.log(connectionUrl);
+  const connectionUrl = process.env.MONGODB_URL;
   try {
     if (connection?.isConnected) return;
     const db = await mongoose.connect(connectionUrl);

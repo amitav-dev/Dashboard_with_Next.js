@@ -4,8 +4,8 @@ import { revalidatePath } from "next/cache";
 import { User } from "./models";
 import { redirect } from "next/navigation";
 import bcrypt from "bcrypt";
-import { signIn } from "../auth";
 import { connectToDB } from "./utills";
+import { signIn } from "../auth";
 
 export const addUser = async (formData: any) => {
   const { username, email, password, phone, address, isAdmin, isActive } =
@@ -69,42 +69,33 @@ export const updateUser = async (formData: any) => {
   redirect("/dashboard/users");
 };
 
-export const authenticate = async (prevState: any, formData: any) => {
-  const { username, password } = Object.fromEntries(formData);
+export const deleteUser = async (formData: any) => {
+  const { id } = Object.fromEntries(formData);
 
   try {
-    await signIn("credentials", { username, password });
+    connectToDB();
+    await User.findByIdAndDelete(id);
+  } catch (err) {
+    console.log(err);
+    throw new Error("Failed to delete user!");
+  }
+
+  revalidatePath("/dashboard/users");
+};
+export const authenticate = async (formData: any) => {
+  const { username, password } = Object.fromEntries(formData);
+  try {
+    const res = await signIn("credentials", {
+      username,
+      password,
+      redirect: false,
+    });
+    return res;
   } catch (err: any) {
+    console.log(err);
     if (err.message.includes("CredentialsSignin")) {
       return "Wrong Credentials";
     }
     throw err;
   }
 };
-// export const addUser = async (formData: any) => {
-//   console.log(formData);
-//   const { username, email, password, phone, address, isAdmin, isActive } =
-//     Object.fromEntries(formData);
-
-//   console.log("username:" + username);
-//   console.log("email:" + email);
-//   console.log("password:" + password);
-//   console.log("phone:" + phone);
-//   console.log("address:" + address);
-//   console.log("isAdmin:" + isAdmin);
-//   console.log("isActive" + isActive);
-// };
-
-// export const updateUser = async (formData: any) => {
-//   console.log(formData);
-//   const { username, email, password, phone, address, isAdmin, isActive } =
-//     Object.fromEntries(formData);
-
-//   console.log("username:" + username);
-//   console.log("email:" + email);
-//   console.log("password:" + password);
-//   console.log("phone:" + phone);
-//   console.log("address:" + address);
-//   console.log("isAdmin:" + isAdmin);
-//   console.log("isActive" + isActive);
-// };

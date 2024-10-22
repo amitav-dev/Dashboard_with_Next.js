@@ -4,7 +4,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname:"xetaravel.com"
+        hostname: "xetaravel.com",
       },
     ],
   },
